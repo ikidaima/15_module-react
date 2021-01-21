@@ -1,44 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-class FormAddComment extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comment: '',
-      author: ''
-    };
+function FormAddComment(props) {
+  let [comment, setComment] = useState('');
+  let [author, setAuthor] = useState('');
 
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({[event.target.name]: event.target.value});
-  }
-
-  handleSubmit(event) {
+  const handleSubmit = event => {
     event.preventDefault();
 
-    this.props.addComment(this.state.comment, this.state.author);
-    this.setState({
-      comment: '',
-      author: ''
-    });
-  }
-
-  render() {
-    return (
+    props.addComment(comment, author);
+    setComment('');
+    setAuthor('');
+  };
+  const handleChange = (event, setState) => {
+    setState(event.target.value);
+  };
+  
+  return (
       <form 
         className='comments__form form'
-        onSubmit={this.handleSubmit}
+        onSubmit={handleSubmit}
       >
         <label className='form__comment'>
           Комментарий:&nbsp;
           <textarea 
             className='form__textarea' 
             name='comment' 
-            value={this.state.comment}
-            onChange={this.handleChange}
+            value={comment}
+            onChange={e => handleChange(e, setComment)}
             required
           />
         </label>
@@ -47,14 +35,14 @@ class FormAddComment extends React.Component {
           <input
             name='author'
             type='text'
-            value={this.state.author}
-            onChange={this.handleChange}
+            value={author}
+            onChange={e => handleChange(e, setAuthor)}
             required
           />
         </label>
         <button type='submit'>Добавить</button>
       </form>
-    );
-  }
+  )
 }
+
 export default FormAddComment;

@@ -1,57 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CommentList from './CommentList';
 import FormAddComment from './FormAddComment';
 import refreshLocalStorage from './refreshLocalStorage';
 
-class Comments extends React.Component {
-  constructor(props) {
-    super(props);
-    this.deleteComment = this.deleteComment.bind(this);
-    this.addComment = this.addComment.bind(this);
+function Comments(props) {
+  const [comments, setComments] = useState(props.comments);
 
-    this.state = {
-      comments: props.comments
-    }
-  }
-
-  deleteComment(id) {
-    this.setState(state => {
-      delete state.comments[id];
-      refreshLocalStorage(this.props.keyLocalStorage, state.comments);
-
-      return {
-        comments: state.comments
-      }
-    });
-  }
-
-  addComment(comment, author) {
-    this.setState(state => {
+  const addComment = (comment, author) => {
+    setComments(prevState => {
       const timeOfCreate = Date.now();
-
-      state.comments[timeOfCreate] = {
-        id: timeOfCreate,
-        author: author,
-        comment: comment,
-        date: (new Date(timeOfCreate)).toJSON()
+      const newState = {
+        ...prevState,
+        [timeOfCreate]: {
+          id: timeOfCreate,
+          author: author,
+          comment, comment,
+          date: (new Date(timeOfCreate)).toJSON()
+        }
       };
-      refreshLocalStorage(this.props.keyLocalStorage, state.comments);
 
-      return {
-        comments: state.comments
-      }
+      refreshLocalStorage(props.keyLocalStorage, newState);
+
+      return newState;
+    });
+  };
+  const deleteComment = id => {
+    setComments(prevState => {
+      const newState = {...prevState}
+      delete newState[id];
+      refreshLocalStorage(props.keyLocalStorage, newState);
+
+      return {...newState};
     })
   }
 
-  render() {
-    return (
-      <section className='comments'>
-        <h2 className='comments__heading'>15 модуль, React</h2>
-        <FormAddComment addComment={this.addComment}/>
-        <CommentList comments={this.state.comments} class='comments__list' deleteComment={this.deleteComment} />
-      </section>
-    )
-  }
+  return (
+    <section className='comments'>
+      <h2 className='comments__heading'>15 модуль, React</h2>
+      <FormAddComment addComment={addComment} />
+      <CommentList comments={comments} className='comment__list' deleteComment={deleteComment} />
+    </section>
+  )
 }
 
 export default Comments;
