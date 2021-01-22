@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CommentList from './CommentList';
 import FormAddComment from './FormAddComment';
 import refreshLocalStorage from './refreshLocalStorage';
@@ -19,8 +19,6 @@ function Comments(props) {
         }
       };
 
-      refreshLocalStorage(props.keyLocalStorage, newState);
-
       return newState;
     });
   };
@@ -28,11 +26,14 @@ function Comments(props) {
     setComments(prevState => {
       const newState = {...prevState}
       delete newState[id];
-      refreshLocalStorage(props.keyLocalStorage, newState);
 
       return {...newState};
     })
   }
+
+  useEffect(() => {
+    refreshLocalStorage(props.keyLocalStorage, comments);
+  })
 
   return (
     <section className='comments'>
